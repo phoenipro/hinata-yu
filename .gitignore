@@ -1,0 +1,9 @@
+node_modules/
+package.json
+package-lock.json
+*.mjs
+.DS_Store
+Thumbs.db
+_img/
+.claude/
+SITE_HANDOFF.md
