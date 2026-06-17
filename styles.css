@@ -560,6 +560,12 @@ h3 {
   box-shadow: var(--shadow-hover);
 }
 
+.video-row.is-active {
+  border-color: rgba(96, 144, 216, 0.5);
+  background: rgba(96, 144, 216, 0.08);
+  box-shadow: var(--shadow-hover);
+}
+
 .video-row img {
   display: block;
   width: 110px;

@@ -30,17 +30,55 @@ if (!prefersReduced && "IntersectionObserver" in window) {
 }
 
 /* ── Lite YouTube embed ── */
-document.querySelectorAll(".feature-embed[data-vid]").forEach((wrap) => {
-  wrap.addEventListener("click", () => {
-    const vid = wrap.dataset.vid;
+const mainEmbed = document.querySelector(".feature-embed[data-vid]");
+const mainTitle = document.querySelector(".feature-card-body h3");
+const mainDesc  = document.querySelector(".feature-card-body p");
+let isPlaying   = false;
+
+function loadMainPlayer(vid, title, desc, autoplay = false) {
+  if (autoplay || isPlaying) {
+    // すでに再生中 or クリックで再生 → iframeに差し替え
     const iframe = document.createElement("iframe");
     iframe.src = `https://www.youtube.com/embed/${vid}?autoplay=1`;
-    iframe.title = wrap.querySelector("img")?.alt ?? "";
+    iframe.title = title;
     iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
     iframe.allowFullscreen = true;
-    wrap.innerHTML = "";
-    wrap.appendChild(iframe);
-  }, { once: true });
+    mainEmbed.innerHTML = "";
+    mainEmbed.appendChild(iframe);
+    isPlaying = true;
+  } else {
+    // サムネ差し替えのみ
+    mainEmbed.dataset.vid = vid;
+    const thumb = mainEmbed.querySelector(".embed-thumb");
+    if (thumb) {
+      thumb.src = `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`;
+      thumb.onerror = () => { thumb.src = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`; };
+      thumb.alt = title;
+    }
+  }
+  if (mainTitle) mainTitle.textContent = title;
+  if (mainDesc)  mainDesc.textContent  = desc;
+}
+
+// メインプレーヤーをクリックで再生
+mainEmbed?.addEventListener("click", () => {
+  const vid   = mainEmbed.dataset.vid;
+  const title = mainEmbed.querySelector(".embed-thumb")?.alt ?? "";
+  loadMainPlayer(vid, title, mainDesc?.textContent ?? "", true);
+}, { once: false });
+
+// 右カードをクリックでメインに反映
+document.querySelectorAll(".video-row[data-vid]").forEach((row) => {
+  row.addEventListener("click", (e) => {
+    e.preventDefault();
+    const { vid, title, desc } = row.dataset;
+    loadMainPlayer(vid, title, desc);
+    // アクティブスタイル
+    document.querySelectorAll(".video-row").forEach((r) => r.classList.remove("is-active"));
+    row.classList.add("is-active");
+    // スクロールしてメインを見せる
+    mainEmbed?.closest(".feature-card")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
 });
 
 /* ── Hover sparks ── */
