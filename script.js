@@ -29,6 +29,20 @@ if (!prefersReduced && "IntersectionObserver" in window) {
   revealTargets.forEach((el) => el.classList.add("is-visible"));
 }
 
+/* ── Lite YouTube embed ── */
+document.querySelectorAll(".feature-embed[data-vid]").forEach((wrap) => {
+  wrap.addEventListener("click", () => {
+    const vid = wrap.dataset.vid;
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://www.youtube.com/embed/${vid}?autoplay=1`;
+    iframe.title = wrap.querySelector("img")?.alt ?? "";
+    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.allowFullscreen = true;
+    wrap.innerHTML = "";
+    wrap.appendChild(iframe);
+  }, { once: true });
+});
+
 /* ── Hover sparks ── */
 const sparkSymbols = ["♪", "♬", "♫", "♩", "✦", "★"];
 
